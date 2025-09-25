@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST Verification Results</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- jsPDF and html2canvas for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Insert Part 2: <style> block here -->
+</head>
+<body data-generated-date="{{ current_time }}">
+    <div class="container">
+        <div class="header-section">
+            <div class="result-title">
+                GST Verification Results
+                <br>
+                <small>Search Result based on GSTIN/UIN</small>
+            </div>
+            <div class="gstin-display">
+                {% if gst_data and gst_data.get('gstin') %}
+                    {{ gst_data.gstin }}
+                {% elif gst_data and gst_data.get('GSTIN') %}
+                    {{ gst_data.GSTIN }}
+                {% else %}
+                    GST NO
+                {% endif %}
+            </div>
+            <div class="verification-date">
+    <i class="fas fa-calendar-alt"></i> Verified on: 
+    {% if gst_data.adhrVFlag == "Yes" %}
+        {{ gst_data.adhrVdt }}
+    {% else %}
+        Not Verified
+    {% endif %}
+</div>
+
+        </div>
+
+        {% if gst_data and gst_data != {} %}
+        <div class="main-table">
+            <table class="data-table">
+                <!-- First Row: Business Names and Registration Date -->
+                <tr class="table-row">
+                    <td class="field-header"><i class="fas fa-building"></i> Legal Name of Business</td>
+                    <td class="field-value">
+                        {% if gst_data.get('lgnm') %}
+                            {{ gst_data.lgnm }}
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                    <td class="field-header"><i class="fas fa-store"></i> Trade Name</td>
+                    <td class="field-value">
+                        {% if gst_data.get('tradeNam') %}
+                            {{ gst_data.tradeNam }}
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                    <td class="field-header"><i class="fas fa-calendar-check"></i> Effective Date of Registration</td>
+                    <td class="field-value date-text">
+                        {% if gst_data.get('rgdt') %}
+                            {{ gst_data.rgdt }}
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <!-- Second Row: Constitution, Status, and Taxpayer Type -->
+                <tr class="table-row">
+                    <td class="field-header"><i class="fas fa-gavel"></i> Constitution of Business</td>
+                    <td class="field-value">
+                        {% if gst_data.get('ctb') %}
+                            {{ gst_data.ctb }}
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                    <td class="field-header"><i class="fas fa-shield-alt"></i> GSTIN / UIN Status</td>
+                    <td class="field-value">
+                        {% set status = gst_data.get('sts', '') %}
+                        {% if status %}
+                            {% if status.lower() == 'active' %}
+                                <span class="status-active">{{ status.upper() }}</span>
+                            {% else %}
+                                <span class="status-inactive">{{ status.upper() }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                    <td class="field-header"><i class="fas fa-user-tag"></i> Taxpayer Type</td>
+                    <td class="field-value">
+                        {% if gst_data.get('dty') %}
+                            {{ gst_data.dty }}
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <!-- Third Row: Administrative Office, Other Office, Principal Place -->
+                <tr class="table-row">
+                    <td class="field-header"><i class="fas fa-map-marker-alt"></i> Administrative Office</td>
+                    <td class="field-value">
+                        {% if gst_data.get('stj') %}
+                            <div class="address-text">
+                                (JURISDICTION - STATE)<br>
+                                {{ gst_data.stj.replace(',', '<br>') | safe }}
+                            </div>
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                    <td class="field-header"><i class="fas fa-building-columns"></i> Other Office</td>
+                    <td class="field-value">
+                        {% if gst_data.get('ctj') %}
+                            <div class="address-text">
+                                (JURISDICTION - CENTER)<br>
+                                {{ gst_data.ctj.replace(',', '<br>') | safe }}
+                            </div>
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                    <td class="field-header"><i class="fas fa-home"></i> Principal Place of Business</td>
+                    <td class="field-value">
+                        {% if gst_data.get('pradr') %}
+                            <div class="address-text">
+                                {% if gst_data.pradr is mapping and gst_data.pradr.get('adr') %}
+                                    {{ gst_data.pradr.adr }}
+                                {% else %}
+                                    {{ gst_data.pradr }}
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <span class="empty-value">Not Available</span>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <!-- Fourth Row: Aadhaar, e-KYC, Additional Trade Name -->
+                <tr class="table-row">
+                    <td class="field-header"><i class="fas fa-id-card"></i> Whether Aadhaar Authenticated?</td>
+<td class="field-value">
+    {% if gst_data.adhrVFlag == "Yes" %}
+        Yes
+        {% if gst_data.adhrVdt %}
+            <br><small>(On {{ gst_data.adhrVdt }})</small>
+        {% endif %}
+    {% else %}
+        No
+    {% endif %}
+</td>
+
+                    <td class="field-header"><i class="fas fa-fingerprint"></i> Whether e-KYC Verified?</td>
+<td class="field-value">
+    {% if gst_data.ekycVFlag %}
+        {{ gst_data.ekycVFlag }}
+    {% else %}
+        <span class="empty-value">Not Available</span>
+    {% endif %}
+</td>
+
+                    <td class="field-header"><i class="fas fa-tags"></i> Additional Trade Name</td>
+                    <td class="field-value">
+                        <span class="view-link" onclick="showAdditionalNames()">View Details</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% else %}
+        <div class="error-section">
+            <i class="fas fa-exclamation-triangle error-icon"></i>
+            <div class="no-data-message">No Data Found</div>
+            <p>Unable to retrieve GST details for the provided GSTIN.</p>
+            <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                Please verify the GSTIN number and captcha, then try again.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="actions-section">
+            <a href="/" class="action-btn btn-primary">
+                <i class="fas fa-search"></i> Search Again
+            </a>
+            <button onclick="window.print()" class="action-btn btn-secondary">
+                <i class="fas fa-print"></i> Print Details
+            </button>
+            <button onclick="downloadPDF()" class="action-btn btn-secondary">
+                <i class="fas fa-file-pdf"></i> Download PDF
+            </button>
+            <button onclick="downloadData()" class="action-btn btn-secondary">
+                <i class="fas fa-download"></i> Download CSV
+            </button>
+        </div>
+    </div>
+
+    <button onclick="downloadPDF()" class="print-btn" title="Download PDF">
+        <i class="fas fa-file-pdf"></i>
+    </button>
+
+    <script>
+        // Function to show additional trade names (placeholder - can be enhanced with modal)
+function showAdditionalNames(gstData) {
+    if (gstData.nba && gstData.nba.length > 0) {
+        // Join all trade names into a single string
+        const names = gstData.nba.join(', ');
+        alert('Additional Trade Names:\n' + names);
+    } else {
+        alert('No additional trade names available.');
+    }
+}
+        // Enhanced CSV Download Function
+        function downloadData() {
+            const data = [];
+            const rows = document.querySelectorAll('.table-row');
+            
+            // Add header row
+            data.push(['Field', 'Value']);
+            
+            rows.forEach(row => {
+                const headers = row.querySelectorAll('.field-header');
+                const values = row.querySelectorAll('.field-value');
+                
+                for (let i = 0; i < headers.length; i++) {
+                    if (headers[i] && values[i]) {
+                        let headerText = headers[i].textContent.trim().replace(/\s+/g, ' ').replace(/^\s*[\r\n]/gm, '');
+                        let valueText = values[i].innerHTML
+                            .replace(/<[^>]*>/g, '') // Strip HTML tags
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        
+                        // Clean up value (remove extra spaces, handle empty values)
+                        if (valueText === '' || valueText.toLowerCase() === 'not available') {
+                            valueText = 'Not Available';
+                        }
+                        
+                        data.push([headerText, valueText]);
+                    }
+                }
+            });
+
+            // Generate CSV
+            let csvContent = "data:text/csv;charset=utf-8,";
+            data.forEach(row => {
+                csvContent += row.map(field => `"${field.replace(/"/g, '""')}"`).join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `gst_verification_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Enhanced PDF Download Function using jsPDF and html2canvas
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const element = document.querySelector('.container');
+            
+            try {
+                // Hide elements not needed in PDF (buttons, floating print btn)
+                const actionsSection = document.querySelector('.actions-section');
+                const printBtn = document.querySelector('.print-btn');
+                const originalActionsDisplay = actionsSection.style.display;
+                const originalPrintDisplay = printBtn.style.display;
+                
+                actionsSection.style.display = 'none';
+                printBtn.style.display = 'none';
+                
+                // Capture the element as canvas
+                const canvas = await html2canvas(element, {
+                    scale: 2, // Higher resolution
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: element.scrollWidth,
+                    height: element.scrollHeight,
+                    logging: false
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 295; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // Add title page if needed (optional)
+                pdf.setFontSize(16);
+                pdf.text('GST Verification Report', 105, 20, { align: 'center' });
+                pdf.setFontSize(10);
+                pdf.text(`Generated on: ${new Date().toLocaleString('en-GB')}`, 105, 25, { align: 'center' });
+
+                // Add the captured image (handle multi-page if content is long)
+                pdf.addImage(imgData, 'PNG', 0, 30, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                // Add footer on all pages
+                const pageCount = pdf.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    pdf.setPage(i);
+                    pdf.setFontSize(9);
+                    pdf.text(`Page ${i} of ${pageCount} | GSTIN: ${document.querySelector('.gstin-display')?.textContent.trim() || 'N/A'}`, 105, 290, { align: 'center' });
+                }
+
+                // Restore hidden elements
+                actionsSection.style.display = originalActionsDisplay;
+                printBtn.style.display = originalPrintDisplay;
+
+                // Download the PDF
+                pdf.save(`gst_verification_${new Date().toISOString().split('T')[0]}.pdf`);
+                
+            } catch (error) {
+                console.error('PDF Generation Error:', error);
+                alert('PDF generation failed. Please try printing instead.');
+                // Fallback to browser print
+                window.print();
+            }
+        }
+
+        // Auto-format data on page load (enhanced date formatting)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Format dates in a more readable way
+            document.querySelectorAll('.date-text').forEach(element => {
+                const dateText = element.textContent.trim();
+                if (dateText && dateText !== 'Not Available' && dateText.match(/\d{4}-\d{2}-\d{2}/)) {
+                    try {
+                        const date = new Date(dateText);
+                        if (!isNaN(date.getTime())) {
+                            element.innerHTML = `<strong>${date.toLocaleDateString('en-GB')}</strong><br><small>(Original: ${dateText})</small>`;
+                        }
+                    } catch (e) {
+                        // Keep original if parsing fails
+                    }
+                }
+            });
+
+            // Add subtle animations for better UX
+            const tableRows = document.querySelectorAll('.table-row');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Update print button tooltip for clarity
+        document.querySelector('.print-btn').title = 'Download as PDF (Enhanced)';
+    </script>
+   <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+            margin-bottom: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #fff 0%, transparent 100%);
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .gstin-display {
+            font-size: 28px;
+            font-weight: 800;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            letter-spacing: 2px;
+        }
+
+        .verification-date {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .main-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table-row {
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s ease;
+        }
+
+        .table-row:hover {
+            background: #f8fafc;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .field-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 18px 20px;
+            font-weight: 600;
+            color: #374151;
+            border-right: 1px solid #e5e7eb;
+            vertical-align: top;
+            width: 28%;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .field-header::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 20px;
+            background: #2563eb;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .field-value {
+            padding: 18px 20px;
+            color: #1f2937;
+            line-height: 1.6;
+            vertical-align: top;
+            border-right: 1px solid #e5e7eb;
+            width: 24%;
+        }
+
+        .field-value:last-child {
+            border-right: none;
+            width: 24%;
+        }
+
+        .status-active {
+            color: #059669;
+            font-weight: 600;
+            padding: 4px 8px;
+            background: rgba(5, 150, 105, 0.1);
+            border-radius: 4px;
+        }
+
+        .status-inactive {
+            color: #dc2626;
+            font-weight: 600;
+            padding: 4px 8px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 4px;
+        }
+
+        .address-text {
+            line-height: 1.7;
+            font-size: 13px;
+        }
+
+        .date-text {
+            color: #374151;
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        .empty-value {
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .view-link {
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .view-link:hover {
+            color: #1d4ed8;
+        }
+
+        .actions-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            text-align: center;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            margin: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .error-section {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #dc2626;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+        }
+
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+            color: #f87171;
+        }
+
+        .no-data-message {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 1000;
+        }
+
+        .print-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        /* Enhanced Print Styles for PDF */
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+                font-family: 'Times New Roman', serif;
+                font-size: 12pt;
+                line-height: 1.4;
+                color: #000;
+            }
+            
+            .container {
+                max-width: none;
+                padding: 20px;
+                box-shadow: none;
+            }
+
+            .header-section {
+                background: #2563eb !important;
+                color: white !important;
+                box-shadow: none;
+                border-radius: 0;
+                padding: 20px;
+                page-break-inside: avoid;
+                position: relative;
+            }
+
+            .header-section::before {
+                display: none;
+            }
+
+            .result-title {
+                font-size: 18pt;
+                margin-bottom: 5px;
+            }
+
+            .gstin-display {
+                font-size: 20pt;
+                background: rgba(255,255,255,0.1);
+                padding: 8px 15px;
+                border: 1px solid rgba(255,255,255,0.3);
+            }
+
+            .verification-date {
+                font-size: 10pt;
+                margin-top: 5px;
+            }
+
+            .main-table {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                border-radius: 0;
+                margin-bottom: 10px;
+                page-break-inside: avoid;
+            }
+
+            .data-table {
+                font-size: 11pt;
+            }
+
+            .field-header {
+                background: #f0f0f0 !important;
+                padding: 12px 15px;
+                font-weight: bold;
+                border-right: 1px solid #ccc;
+                width: 28%;
+                font-size: 11pt;
+            }
+
+            .field-header::after {
+                display: none;
+            }
+
+            .field-value {
+                padding: 12px 15px;
+                border-right: 1px solid #ccc;
+                width: 24%;
+                font-size: 11pt;
+            }
+
+            .field-value:last-child {
+                border-right: none;
+            }
+
+            .status-active, .status-inactive {
+                padding: 2px 6px;
+                font-size: 10pt;
+                background: none !important;
+                border: 1px solid;
+                border-radius: 3px;
+            }
+
+            .address-text {
+                font-size: 10pt;
+            }
+
+            .actions-section,
+            .print-btn,
+            .view-link {
+                display: none !important;
+            }
+
+            .error-section {
+                background: #fff !important;
+                border: 1px solid #ccc;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+
+            .error-icon {
+                font-size: 48pt;
+                color: #dc2626;
+            }
+
+            /* Page setup for PDF */
+            @page {
+                size: A4;
+                margin: 1in;
+                @top-center {
+                    content: "GST Verification Report";
+                    font-size: 12pt;
+                    font-weight: bold;
+                    color: #2563eb;
+                }
+                @bottom-center {
+                    content: "Generated on " attr(data-generated-date);
+                    font-size: 9pt;
+                    color: #666;
+                }
+            }
+
+            /* Avoid breaking rows */
+            .table-row {
+                page-break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .field-header,
+            .field-value {
+                padding: 12px 15px;
+            }
+
+            .field-header {
+                width: 35%;
+            }
+
+            .field-value {
+                width: 65%;
+            }
+
+            .table-row {
+                display: block;
+                margin-bottom: 1px;
+            }
+
+            .field-header,
+            .field-value {
+                display: block;
+                width: 100% !important;
+                border-right: none;
+            }
+
+            .field-header {
+                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                color: white;
+                border-bottom: none;
+                padding-bottom: 8px;
+            }
+
+            .field-header::after {
+                display: none;
+            }
+
+            .field-value {
+                background: white;
+                padding-top: 8px;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .header-section {
+                padding: 20px 15px;
+            }
+
+            .result-title {
+                font-size: 20px;
+            }
+
+            .gstin-display {
+                font-size: 22px;
+            }
+        }
+    </style>
+</body>
+</html>
