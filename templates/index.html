@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GST Verification Portal</title>
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/sitesv/AICyYdb2JPl22nYQ-mG-AkkkXZ8T9faEhG22OVHMSfdtUBti7DWvpdghan9lh0zXpqDRwSckXh8KGgRMC827wc2rV4IZ7hhpujwsbwMKxXrgUCcUHhpYP94aLm3RgqHLgf-ebtRpt_kjk6sOjUKim-qbkmYKYjK7ysnrF1arDpHZCdLphygnVZronExPHQ8=w16383" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -37,20 +38,27 @@
             z-index: 100;
         }
 
+        /* Image Logo Styling (using provided URL, responsive and professional) */
         .logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #4f46e5;
-            gap: 10px;
+            max-width: 200px; /* Limit width to fit header */
+            height: auto;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .logo i {
-            font-size: 1.8em;
-            color: #7c3aed;
+        .logo img {
+            width: 20%;
+            height: auto;
+            object-fit: contain; /* Maintain aspect ratio without distortion */
+            display: block;
         }
 
+        .logo:hover {
+            transform: scale(1.05); /* Subtle hover scale */
+            filter: drop-shadow(0 2px 8px rgba(79, 70, 229, 0.3)); /* Glow/shadow on hover */
+        }
+
+        /* Contact Button */
         .contact-btn {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
@@ -408,6 +416,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .logo {
+                max-width: 150px; /* Smaller on mobile for better fit */
+            }
+
             .social-links {
                 gap: 15px;
             }
@@ -422,9 +434,11 @@
 </head>
 <body>
     <header class="site-header">
+        <!-- Image Logo (using provided Google Sites URL) -->
         <div class="logo">
-            <i class="fas fa-cogs"></i>
-            ABHISOLUTIONS
+            <img src="https://lh3.googleusercontent.com/sitesv/AICyYdb2JPl22nYQ-mG-AkkkXZ8T9faEhG22OVHMSfdtUBti7DWvpdghan9lh0zXpqDRwSckXh8KGgRMC827wc2rV4IZ7hhpujwsbwMKxXrgUCcUHhpYP94aLm3RgqHLgf-ebtRpt_kjk6sOjUKim-qbkmYKYjK7ysnrF1arDpHZCdLphygnVZronExPHQ8=w16383" 
+                 alt="ABHISOLUTIONS Logo" 
+                 loading="lazy">
         </div>
         <button class="contact-btn" onclick="openModal()">
             <i class="fas fa-envelope"></i> Contact
@@ -522,30 +536,9 @@
             </div>
         </div>
     </div>
-
     <footer class="site-footer">
         Made by <i class="fas fa-heart"></i> Abhi dubey
     </footer>
-
-    <!-- Contact Modal -->
-    <div id="contactModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Contact Me</h2>
-            <div class="social-links">
-                <a href="https://www.instagram.com/abhidubey314/" target="_blank" title="Instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="https://www.snapchat.com/@abhidubey314" target="_blank" title="Snapchat">
-                    <i class="fab fa-snapchat-ghost"></i>
-                </a>
-                <a href="https://linktr.ee/abhidubey314" target="_blank" title="Linktree">
-                    <i class="fas fa-link"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Modal functions
 function openModal() {
