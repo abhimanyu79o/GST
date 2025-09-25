@@ -1,6 +1,2 @@
-flask
-requests
-bs4
-uuid
-uvicorn
-asgiref
+gunicorn==23.0.0
+packaging==25.0
