@@ -17,9 +17,63 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* Site Header */
+        .site-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px 12px 0 0;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #4f46e5;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 1.8em;
+            color: #7c3aed;
+        }
+
+        .contact-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .container {
@@ -237,7 +291,102 @@
             margin: 0;
         }
 
+        /* Site Footer */
+        .site-footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 12px 12px;
+            padding: 15px 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9em;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-footer i {
+            color: #ef4444;
+        }
+
+        /* Contact Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+            text-align: center;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #4f46e5;
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #374151;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
         @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .site-header,
+            .site-footer {
+                padding: 15px 20px;
+            }
+            
             .container {
                 margin: 10px;
             }
@@ -258,142 +407,205 @@
             .feature-list {
                 grid-template-columns: 1fr;
             }
+
+            .social-links {
+                gap: 15px;
+            }
+
+            .social-links a {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <i class="fas fa-file-invoice-dollar gst-icon"></i>
-                <h1>GST Verification</h1>
-                <p>Verify GST registration details instantly</p>
-            </div>
+    <header class="site-header">
+        <div class="logo">
+            <i class="fas fa-cogs"></i>
+            ABHISOLUTIONS
         </div>
-        
-        <div class="form-container">
-            <div class="info-banner">
-                <i class="fas fa-info-circle"></i>
-                <p>Enter a valid 15-digit GSTIN to retrieve taxpayer details from the official GST portal.</p>
+        <button class="contact-btn" onclick="openModal()">
+            <i class="fas fa-envelope"></i> Contact
+        </button>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <div class="header-content">
+                    <i class="fas fa-file-invoice-dollar gst-icon"></i>
+                    <h1>GST Verification</h1>
+                    <p>Verify GST registration details instantly</p>
+                </div>
             </div>
             
-            <form action="/getGSTDetails" method="post" id="gstForm">
-                <input type="hidden" name="sessionId" value="{{ session_id }}">
-                
-                <div class="form-group">
-                    <label for="gstin">
-                        <i class="fas fa-hashtag"></i> GST Identification Number (GSTIN)
-                    </label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-hashtag"></i>
-                        <input type="text" 
-                               id="gstin" 
-                               name="GSTIN" 
-                               placeholder="Enter 15-digit GSTIN (e.g., 09AAACH7409R1ZZ)" 
-                               maxlength="15" 
-                               required>
-                    </div>
+            <div class="form-container">
+                <div class="info-banner">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Enter a valid 15-digit GSTIN to retrieve taxpayer details from the official GST portal.</p>
                 </div>
+                
+                <form action="/getGSTDetails" method="post" id="gstForm">
+                    <input type="hidden" name="sessionId" value="{{ session_id }}">
+                    
+                    <div class="form-group">
+                        <label for="gstin">
+                            <i class="fas fa-hashtag"></i> GST Identification Number (GSTIN)
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-hashtag"></i>
+                            <input type="text" 
+                                   id="gstin" 
+                                   name="GSTIN" 
+                                   placeholder="Enter 15-digit GSTIN (e.g., 09AAACH7409R1ZZ)" 
+                                   maxlength="15" 
+                                   required>
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="captcha">
-                        <i class="fas fa-shield-alt"></i> Security Verification
-                    </label>
-                    <div class="captcha-container">
-                        <img src="{{ captcha }}" 
-                             alt="Security captcha" 
-                             class="captcha-image"
-                             onclick="refreshCaptcha()"
-                             title="Click to refresh captcha">
-                        <div class="captcha-input">
-                            <div class="input-wrapper">
-                                <i class="fas fa-key"></i>
-                                <input type="text" 
-                                       id="captcha" 
-                                       name="captcha" 
-                                       placeholder="Enter captcha" 
-                                       autocomplete="off" 
-                                       required>
+                    <div class="form-group">
+                        <label for="captcha">
+                            <i class="fas fa-shield-alt"></i> Security Verification
+                        </label>
+                        <div class="captcha-container">
+                            <img src="{{ captcha }}" 
+                                 alt="Security captcha" 
+                                 class="captcha-image"
+                                 onclick="refreshCaptcha()"
+                                 title="Click to refresh captcha">
+                            <div class="captcha-input">
+                                <div class="input-wrapper">
+                                    <i class="fas fa-key"></i>
+                                    <input type="text" 
+                                           id="captcha" 
+                                           name="captcha" 
+                                           placeholder="Enter captcha" 
+                                           autocomplete="off" 
+                                           required>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-search"></i>
-                    Verify GST Details
-                </button>
-            </form>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-search"></i>
+                        Verify GST Details
+                    </button>
+                </form>
 
-            <div class="features">
-                <h3 style="color: #374151; margin-bottom: 15px; font-size: 1.1em;">
-                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
-                    What You'll Get
-                </h3>
-                <div class="feature-list">
-                    <div class="feature-item">
-                        <i class="fas fa-building"></i>
-                        <span>Business Name</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Registered Address</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-calendar-check"></i>
-                        <span>Registration Date</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-clipboard-check"></i>
-                        <span>GST Status</span>
+                <div class="features">
+                    <h3 style="color: #374151; margin-bottom: 15px; font-size: 1.1em;">
+                        <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                        What You'll Get
+                    </h3>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-building"></i>
+                            <span>Business Name</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Registered Address</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Registration Date</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>GST Status</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <footer class="site-footer">
+        Made by <i class="fas fa-heart"></i> Abhi dubey
+    </footer>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Contact Me</h2>
+            <div class="social-links">
+                <a href="https://www.instagram.com/abhidubey314/" target="_blank" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.snapchat.com/@abhidubey314" target="_blank" title="Snapchat">
+                    <i class="fab fa-snapchat-ghost"></i>
+                </a>
+                <a href="https://linktr.ee/abhidubey314" target="_blank" title="Linktree">
+                    <i class="fas fa-link"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Auto-format GSTIN input
-        document.getElementById('gstin').addEventListener('input', function(e) {
-            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-            if (value.length > 15) {
-                value = value.substring(0, 15);
-            }
-            e.target.value = value;
-        });
+        // Modal functions
+function openModal() {
+    document.getElementById('contactModal').style.display = 'block';
+}
 
-        // Auto-uppercase captcha
-        document.getElementById('captcha').addEventListener('input', function(e) {
-            e.target.value = e.target.value.toUpperCase();
-        });
+function closeModal() {
+    document.getElementById('contactModal').style.display = 'none';
+}
 
-        // Form validation
-        document.getElementById('gstForm').addEventListener('submit', function(e) {
-            const gstin = document.getElementById('gstin').value;
-            const captcha = document.getElementById('captcha').value;
-            
-            if (gstin.length !== 15) {
-                alert('Please enter a valid 15-digit GSTIN');
-                e.preventDefault();
-                return false;
-            }
-            
-            if (captcha.length < 3) {
-                alert('Please enter the captcha text');
-                e.preventDefault();
-                return false;
-            }
-            
-            // Show loading state
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-            submitBtn.disabled = true;
-        });
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('contactModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
 
-        function refreshCaptcha() {
-            // This would need to be implemented on the backend
-            alert('Please refresh the page to get a new captcha');
-        }
+// Refresh captcha function (placeholder - implement backend refresh if needed)
+function refreshCaptcha() {
+    // This would need to be implemented on the backend to generate a new captcha
+    alert('Please refresh the page to get a new captcha');
+}
+
+// Auto-format GSTIN input
+document.getElementById('gstin').addEventListener('input', function(e) {
+    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (value.length > 15) {
+        value = value.substring(0, 15);
+    }
+    e.target.value = value;
+});
+
+// Auto-uppercase captcha
+document.getElementById('captcha').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase();
+});
+
+// Form validation
+document.getElementById('gstForm').addEventListener('submit', function(e) {
+    const gstin = document.getElementById('gstin').value;
+    const captcha = document.getElementById('captcha').value;
+    
+    if (gstin.length !== 15) {
+        alert('Please enter a valid 15-digit GSTIN');
+        e.preventDefault();
+        return false;
+    }
+    
+    if (captcha.length < 3) {
+        alert('Please enter the captcha text');
+        e.preventDefault();
+        return false;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+    submitBtn.disabled = true;
+});
     </script>
 </body>
 </html>
