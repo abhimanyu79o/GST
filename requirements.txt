@@ -1,2 +1,7 @@
 gunicorn==23.0.0
 packaging==25.0
+flask
+requests
+bs4
+uuid
+asgiref
